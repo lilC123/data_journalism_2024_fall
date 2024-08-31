@@ -36,10 +36,41 @@ setwd("~/jour472/data_journalism_2024_fall")
 library(tidyverse)
 ```
 
-### How to print in R
+### How to print
 
 ```{r}
 
 print("write whatever u want here")
+
+```
+
+### How to assign variables
+
+```{r}
+
+WriteNameOfVariableHere <- 3
+#the left-facing arrow assigns whatever u put to a variable with that name
+#so we now have a variable called 'WriteNameOfVariableHere' whose value is 3
+
+```
+
+### How to do basic math functions
+
+```{r}
+
+x <- 5
+y <- 6
+#use + for addition, - for subtraction, * for multiplication, and / for division
+#so y+x would return 11
+
+```
+
+### How to find minimum and maximum values
+
+```{r}
+
+#use min() or max()
+max(8, 17, 4, 38)
+#will return 38
 
 ```
