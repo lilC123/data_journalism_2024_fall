@@ -20,57 +20,81 @@ knitr::opts_chunk$set(echo = TRUE)
 Consider this a personal guide to the commands and functions you will learn. In general, when you come across an R command or function that you want to remember, put it in here along with a description of what it does and when you'd use it.
 
 ### How to set the working directory
-
 The command to set a working directory is setwd(). For example, this sets the working directory to a directory called data_journalism_2024_fall inside a directory called jour472 located inside your home directory (the ~ is equivalent of /Users/[youruser] on a Mac).
-
 ```{r}
-
-setwd("~/jour472/data_journalism_2024_fall")
-
+setwd("~/Desktop/JOUR472/GitHub/data_journalism_2024_fall")
 ```
 
 ### How to install and load the tidyverse
-
 ```{r}
 #install.packages("tidyverse")
 library(tidyverse)
 ```
 
 ### How to print
-
 ```{r}
-
 print("write whatever u want here")
-
 ```
 
 ### How to assign variables
-
 ```{r}
-
-WriteNameOfVariableHere <- 3
+write_name_of_variable_here <- 3
 #the left-facing arrow assigns whatever u put to a variable with that name
 #so we now have a variable called 'WriteNameOfVariableHere' whose value is 3
-
 ```
 
 ### How to do basic math functions
-
 ```{r}
-
 x <- 5
 y <- 6
+y+x
+17-2
 #use + for addition, - for subtraction, * for multiplication, and / for division
 #so y+x would return 11
-
 ```
 
 ### How to find minimum and maximum values
-
 ```{r}
-
 #use min() or max()
 max(8, 17, 4, 38)
 #will return 38
-
 ```
+
+### How to read an 'rds' file
+```{r}
+read_rds(file_name_here)
+#will show in Environment
+```
+
+### How to get a list of the columns in a dataset
+```{r}
+glimpse(file_name_here)
+#will return a list of the columns, the data type for each column and and the first few values for each column
+```
+
+### How to get a preliminary table view of a dataset
+```{r}
+head(file_name_here)
+#will return the first several columns and the first six rows of data in table orientation
+```
+
+### How to give a sequence of data commands
+```{r}
+data |> function
+#the '|>' operator tells R to take the data and then do this function to it
+```
+
+### Common pattern for analyzing datasets
+```{r}
+data |> group_by(COLUMN NAME) |> summarize(VARIABLE NAME = AGGREGATE FUNCTION(COLUMN NAME))
+#summarize() is a very useful dplyr function
+#arrange() can arrange your data
+```
+
+### Other helpful summarization functions
+```{r}
+sum() #adds values together
+median() #finds the median
+mean() #averages values
+min() #see line 56 for min and max
+max()
