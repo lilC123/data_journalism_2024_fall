@@ -105,3 +105,56 @@ max()
 filter("column_name_here" "!= or ==" 'value name')
 #'!=' if you don't want that value included, '==' if you do
 ```
+
+###How to add a column do your datset
+```{r}
+mutate("new_column_name_here" = "math to create new column")
+#basic math functions apply to the math section
+#the name of the new column can be the name of an existing column you want to replace/upgrade
+```
+
+###How to add a column with conditions
+```{r}
+case_when("column_name_here" "< or <= or > or >=" ~ "name_of_value_in_new_column")
+#this is a mutate() function
+#you can add more conditions to the condition section with "&" for 'and' and "|" for 'or'
+#it doesn't just have to be less than, greater than, etc.
+```
+
+###How to select specific columns for your codeblock's dataset
+```{r}
+select("column1_name_here", "column2_name_here", "column3_name_here")
+#only the columns you list will show up when you run the codeblock
+```
+
+###Lubridate
+```{r}
+#Lubridate is a tidyverse package that makes dealing with dates, times, etc. much easier
+
+ymd(20101215)
+#ymd stands for year, month, day
+#will return December 15, 2010, displayed as "2010-12-15"
+
+#dmy, mdy also work
+mdy("4/1/17")
+#will return April 1, 2017, displayed as "2017-04-01"
+
+bday <- dmy("25/09/2003")
+month(bday)
+#will return September, displayed as "9"
+
+wday(bday, label = TRUE)
+#will return Thursday, displayed as "Thu"
+
+year(bday) <- 2016
+wday(bday, label = TRUE)
+#will return Sunday, displayed as "Sun", since Sep. 25, 2016 was a Sunday
+```
+
+###Hopw to make your column and value names all uppercase
+```{r}
+str_to_upper("column_or_value_name_here")
+#this is a mutate() function
+#helpful because R considers 'Baltimore' and 'BALTIMORE' as 2 separate things
+#str_to_lower(), str_to_title(), str_to_sentence() also common
+```
