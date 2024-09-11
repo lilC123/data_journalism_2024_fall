@@ -98,3 +98,10 @@ median() #finds the median
 mean() #averages values
 min() #see line 56 for min and max
 max()
+```
+
+###How to filter your dataset
+```{r}
+filter("column_name_here" "!= or ==" 'value name')
+#'!=' if you don't want that value included, '==' if you do
+```
