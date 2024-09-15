@@ -118,4 +118,6 @@ wv_summary <- westvirginia_winred_contributions |>
     smallest_contrib_amount = min(amount),
     largest_contrib_amount = max(amount)
   )
+
+wv_summary
 ```
