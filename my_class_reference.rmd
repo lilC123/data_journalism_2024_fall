@@ -151,10 +151,64 @@ wday(bday, label = TRUE)
 #will return Sunday, displayed as "Sun", since Sep. 25, 2016 was a Sunday
 ```
 
-###Hopw to make your column and value names all uppercase
+###How to make your column and value names all uppercase
 ```{r}
 str_to_upper("column_or_value_name_here")
 #this is a mutate() function
 #helpful because R considers 'Baltimore' and 'BALTIMORE' as 2 separate things
 #str_to_lower(), str_to_title(), str_to_sentence() also common
+```
+
+###How to standardize column names
+```{r}
+clean_names("name_of_dataset_here")
+#makes ever column name lowercase with underscores instead of spaces if applicable
+#helpful with inconsistent column names
+```
+
+###How to change one column name
+```{r}
+rename("new_column_name" = "old_column_name")
+#don't use quotation marks
+```
+
+###How to find duplicate rows in your data
+```{r}
+get_dupes("name_of_dataset_here")
+#will return the original row plus all duplicates
+```
+
+###How to change the data type of a column
+```{r}
+as.numeric("column_name_here")
+#as.character() for the other way around
+```
+
+###How to include non-duplicate rows in a new dataframe
+```{r}
+distinct()
+#will exclude any duplicate rows
+```
+
+###How to titlize all the values in a column
+```{r}
+str_to_title("column_name_here")
+#capitalizes the first letter of each value and lowercases the rest
+```
+
+###How to shorten all values in a column
+```{r}
+str_sub("column_name_here", start="start_number"L, end="end_number"L)
+#will reduce every value to only the values between your desired start and end numbers
+#for the value "3746283048", a start of 3 and end of 7 would change the value into "46283"
+#helpful for reducing 9-digit zip codes to 5
+```
+
+###How to detect and correct misspellings in a column
+```{r}
+str_detect("column_name_here","^misspelling_here") ~ "correct_spelling_here",
+    TRUE ~ "column_name_here"
+  )
+#this is a case_when() function
+#second line keeps all the correct spellings as they are
 ```
