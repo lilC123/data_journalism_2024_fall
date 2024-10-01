@@ -212,3 +212,37 @@ str_detect("column_name_here","^misspelling_here") ~ "correct_spelling_here",
 #this is a case_when() function
 #second line keeps all the correct spellings as they are
 ```
+
+###The list() function
+```{r}
+a = c(1, 2, 3, 4, 5)
+b = c("A", "B", "C", "D", "E")
+c = c("A", "B", "c", "1", "2")
+
+list(a, b, c)
+#exactly what it sounds like, doesn't have to be variables
+```
+
+###How to make one datafram from multiple data files
+```{r}
+bind_rows(list("first_dataframe_here", "second_dataframe_here", "and_so_on"))
+#often used with list() because you're pulling from several dataframes
+#helpful (and only really applicable) when different dataframes have the same structure (column names, data types, etc.), such as yearly crime reports, election data, or anything that is presented the same way across subsequent datasets
+```
+
+###How to join datasets that are not completely alike
+```{r}
+left_join() #takes all the columns from the left table and only the columns that match in the right one
+right_join() #takes all the columns from the right table and only the columns that match in the left one
+inner_join() #takes only the columns that are the same across both
+full_join() #takes all the columns, generally rare to find a use for
+#in the best-case scenario, the two tables we want to join share a common column
+
+join_by() #additional instructions for your join function
+#helpful when you have identical info but the column names are different
+join_by("column_name_from_first_dataset_here"=="column_name_from_second_dataset_here")
+#if join_by() is not included, the join will automatically join by any common columns
+
+#full syntax below:
+"first_dataset_here" |> 'type'_join("second_dataset_here", join_by("arguments_here"))
+```
