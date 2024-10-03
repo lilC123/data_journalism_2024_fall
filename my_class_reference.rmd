@@ -233,9 +233,9 @@ bind_rows(list("first_dataframe_here", "second_dataframe_here", "and_so_on"))
 ###How to join datasets that are not completely alike
 ```{r}
 left_join() #takes all the columns from the left table and only the columns that match in the right one
-right_join() #takes all the columns from the right table and only the columns that match in the left one
-inner_join() #takes only the columns that are the same across both
-full_join() #takes all the columns, generally rare to find a use for
+right_join() #pointless to use
+inner_join() #takes only the values that are the same across identical columns
+full_join() #combines everything, generally rare to find a use for
 #in the best-case scenario, the two tables we want to join share a common column
 
 join_by() #additional instructions for your join function
