@@ -147,55 +147,41 @@ A1. The changes for Democrats and Republicans are not that substantial. Democrat
 ```{r}
 dem_rep_unaf_regs_24 <- current_regs_by_county |>
   select(county, dem, rep, unaffiliated, total) |>
-  filter(county == "TOTAL") |>
   mutate(dem_percentage = dem/total * 100) |>
   mutate(rep_percentage = rep/total * 100) |>
   mutate(unaf_percentage = unaffiliated/total * 100)
-dem_rep_unaf_regs_24
-```
-
-```{r}
 dem_rep_unaf_regs_22 <- current_regs_by_county_22 |>
   select(county, dem, rep, unaffiliated_22, total) |>
-  filter(county == "TOTAL") |>
   mutate(dem_percentage = dem/total * 100) |>
   mutate(rep_percentage = rep/total * 100) |>
   mutate(unaf_percentage = unaffiliated_22/total * 100)
-dem_rep_unaf_regs_22
-```
-
-```{r}
 reg_changes_22_24 <- dem_rep_unaf_regs_24 |>
   full_join(dem_rep_unaf_regs_22) |>
+  filter(county == "TOTAL") |>
   mutate(dem_change = (first(dem_percentage)-second(dem_percentage))/second(dem_percentage)*100) |>
   mutate(rep_change = (first(rep_percentage)-second(rep_percentage))/second(rep_percentage)*100) |>
   mutate(unaf_change = (first(unaf_percentage)-second(unaf_percentage))/second(unaf_percentage)*100)
+dem_rep_unaf_regs_24
+dem_rep_unaf_regs_22
 reg_changes_22_24
 ```
 
 Q2. Among the Maryland jurisdictions with the most registered voters, which one had the biggest percentage increase in unaffiliated voters between 2022 and 2024? How did that county vote for governor in 2022 and for president in 2020? Contrast the partisan percentages of that county with the county that had the eighth-largest percentage increase in unaffiliated voters. You should display information from the data that shows the counties with the largest percentage increase first.
 
-A2.
+A2. Prince George's County had the biggest percent increase in unaffiliated voters between 2022 and 2024. PG County voted overwhelmingly in favor of Wes Moore for governor in 2022 and Joe Biden for president in 2020. The county with the 8th-largest increase was Howard County. Both counties are heavily Democratic, though PG County's gap between Dem and Rep is much wider. Both counties have more unaffiliated voters than Republican voters.
 
 ```{r}
 unaf_regs_by_county_24 <- current_regs_by_county |>
   select(county, unaffiliated, total) |>
   mutate(percentage = unaffiliated/total * 100)
-unaf_regs_by_county_24
-```
-
-```{r}
 unaf_regs_by_county_22 <- current_regs_by_county_22 |>
   select(county, unaffiliated_22, total) |>
   mutate(percentage_22 = unaffiliated_22/total * 100) |>
   rename(total_22 = total)
-unaf_regs_by_county_22
-```
-
-```{r}
 unaf_regs_22_24 <- merge(unaf_regs_by_county_22, unaf_regs_by_county_24) |>
   select(county, percentage_22, percentage) |>
   mutate(percent_change = (percentage-percentage_22)/percentage_22*100) |>
+  rename(percentage_24 = percentage) |>
   arrange(desc(percent_change))
 unaf_regs_22_24
 ```
@@ -204,20 +190,45 @@ Q3. Do the party percentages of new registrants (% Dem, % Rep, % Unaffiliated) f
 
 In other words, did new registrants mirror the overall partisan composition of the electorate, or were they different? Do any of the methods of registration vary significantly from the overall partisan pattern? Which method is worthy of further exploration?
 
-A3.
+A3. The percentage of new registrants are very similar to the total registration at those times. Around half were Democrats, which is in-line with overall registration, though unaffiliated voters had a much higher percentage than Republicans, relative to current registration in both years. While no registration type is a true outlier, however Democrats seem to dominate registration by mail, which may be worth further exxploration as to why.
 
 ```{r}
-
+new_registrants_by_party <- new_registrants_by_party |>
+  select(registration_type, dem, rep, unaffiliated, total) |>
+  mutate(dem_percentage = dem/total * 100) |>
+  mutate(rep_percentage = rep/total * 100) |>
+  mutate(unaf_percentage = unaffiliated/total * 100) |>
+  arrange(desc(total))
+new_registrants_by_party_22 <- new_registrants_by_party_22 |>
+  select(registration_type, dem, rep, unaffiliated_22, total) |>
+  mutate(dem_percentage = dem/total * 100) |>
+  mutate(rep_percentage = rep/total * 100) |>
+  mutate(unaf_percentage = unaffiliated_22/total * 100) |>
+  arrange(desc(total))
+new_registrants_by_party
+new_registrants_by_party_22
 ```
 
 Q4. Choose your own adventure! Using both the 2024 and 2022 data for one of the dataframes (changes, removals or new registrations), ask and answer a question that makes at least one comparison and requires code to answer. That could involve calculating a percentage, percentage change or the raw difference between two columns.
 
-A4.
+A4. I did the same process as Q2 but for Republican registrants. Cecil County had, by far, the biggest percent increase in Republican voters between 2022 and 2024. PG County voted slightly in favor of Dan Cox for governor in 2022 and haevily for Donald Trump for president in 2020.
 
 ```{r}
-
+rep_regs_by_county_24 <- current_regs_by_county |>
+  select(county, rep, total) |>
+  mutate(percentage = rep/total * 100)
+rep_regs_by_county_22 <- current_regs_by_county_22 |>
+  select(county, rep, total) |>
+  mutate(percentage_22 = rep/total * 100) |>
+  rename(total_22 = total)
+rep_regs_22_24 <- merge(rep_regs_by_county_22, rep_regs_by_county_24, by=c("county"), all=TRUE) |>
+  select(county, percentage_22, percentage) |>
+  mutate(percent_change = (percentage-percentage_22)/percentage_22*100) |>
+  #rename(percentage_24 = percentage) |>
+  arrange(desc(percent_change))
+rep_regs_22_24
 ```
 
 Q5. What's the best story idea or question you've seen as a result of the work you've done in this lab?
 
-A5.
+A5. Cecil County is a clear outlier in the percent change in unaffiliated voter registration by county at less than 1% while the next lowest is almost 5%. Why is this? What's going on at Cecil County polls?
