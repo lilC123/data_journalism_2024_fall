@@ -96,26 +96,68 @@ moore_total_md
 
 ### Sentence 4
 
-* **Sentence text**: ["Moore, King and Perez stand in stark contrast to Peter Franchot, a former Maryland state delegate and current comptroller, who raised over 78% of his $1.66 million from inside Maryland."]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: "Moore, King and Perez stand in stark contrast to Peter Franchot, a former Maryland state delegate and current comptroller, who raised over 78% of his $1.66 million from inside Maryland."
+* **Analysis summary**: The reverse engineering produced the same findings as the report. Our code found that 78.07% of Peter Franchot's contributions came from Maryland contributors.
 
 ```{r}
-# Put code to reverse engineer sentence here
+franchot_contribs <- clean_names(read.csv("data/franchot_contribs.csv"))
+franchot_contribs <- franchot_contribs |>
+  mutate(state = str_extract(contributor_address, "\\b[A-Z]{2}\\b"))
 
-# Display results of code below this codeblock
+md_contribs_franchot <- franchot_contribs |>
+  filter(state == "MD")
 
+total_md_contribs_franchot <- sum(md_contribs_franchot$contribution_amount, na.rm = TRUE)
+total_contribs_franchot <- sum(franchot_contribs$contribution_amount, na.rm = TRUE)
+
+md_percentage_franchot <- (total_md_contribs_franchot / total_contribs_franchot) * 100
+
+md_percentage_franchot
 ```
 
 ### Sentence 5
 
-* **Sentence text**: ["King’s campaign, which raised just under 11% of its money from Maryland, said it received donations from every county in the state..."]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: "King’s campaign, which raised just under 11% of its money from Maryland, said it received donations from every county in the state..."
+* **Analysis summary**: The assertion that King received contributions from every county in the state is false, according to our data. Based on our analysis, King did not receive any contributions from Somerset County.
 
 ```{r}
-# Put code to reverse engineer sentence here
+king_md_contribs_by_county <- king_contribs_md |>
+  mutate(
+    county=case_when(
+      str_detect(contributor_address, "Barton|Cumberland|Frostburg|Lonaconing|Luke|Midland|Westernport|Bowling Green|Cresaptown|Ellerslie|La Vale|McCoole|Mount Savage|Potomac Park") ~ "Allegany",
+      str_detect(contributor_address, "Annapolis|ANNAPOLIS|annapolis|ARNOLD|Harwood|Highland Beach|Annapolis Neck|Arden on the Severn|Arnold|Brooklyn Park|Cape Saint Claire|Crofton|Crownsville|Deale|Edgewater|Ferndale|Hanover|Fort Meade|Friendship|Galesville|Gambrills|Glen Burnie|Herald Harbor|Lake Shore|Linthicum|Maryland City|Davidsonville|Mayo|Naval Academy|Odenton|Parole|Pasadena|Pumphrey|Riva|Riviera Beach|Selby-on-the-Bay|Severn|Severna Park|Shady Side|Millersville|South Gate") ~ "Anne Arundel",
+      str_detect(contributor_address,"Baltimore|BALTIMORE|Mount Washington") ~ "Baltimore City",
+      str_detect(contributor_address,"Barton|Phoenix|Monkton|Parkton|Glen Arm|Baldwin|Gwynn Oak|Nottingham|Cumberland|Frostburg|Lonaconing|Luke|Midland|Westernport|Arbutus|Baltimore Highlands|Bowleys Quarters|Carney|Catonsville|Cockeysville|Dundalk|Edgemere|Essex|Garrison|Hampton|Kingsville|Lansdowne|Lochearn|Lutherville|Mays Chapel|Middle River|Milford Mill|Windsor Mill|Overlea|Owings Mills|Parkville|Perry Hall|Pikesville|Randallstown|Reisterstown|Rosedale|Rossville|Timonium|Towson|White Marsh|Woodlawn") ~ "Baltimore County",
+      str_detect(contributor_address,"Chesapeake Beach|North Beach|Broomes Island|Calvert Beach|Chesapeake Ranch Estates|Drum Point|Dunkirk|Huntingtown|Long Beach|Lusby|Owings|Prince Frederick|Prnc Frederck|Port Republic|St. Leonard|Saint Leonard|Dowell|Solomons") ~ "Calvert",
+      str_detect(contributor_address,"Denton|Federalsburg|Goldsboro|Greensboro|Henderson|Hillsboro|Marydel|Preston|Ridgely|Templeville|Choptank|West Denton|Williston") ~ "Caroline",
+      str_detect(contributor_address,"Westminster|Finksburg|Woodbine|Taneytown|Manchester|Mount Airy|New Windsor|Union Bridge|Hampstead|Sykesville|Eldersburg") ~ "Carroll",
+      str_detect(contributor_address,"Cecilton|Charlestown|Chesapeake City|Elkton|North East|Perryville|Port Deposit|Rising Sun") ~ "Cecil",
+      str_detect(contributor_address,"Indian Head|La Plata|Port Tobacco Village|Bensville|Bryans Road|Bryantown|Cobb Island|Hughesville|Pomfret|Potomac Heights|Rock Point|Saint Charles|Waldorf|Tobacco|White Plains") ~ "Charles",
+      str_detect(contributor_address,"Cambridge|Brookview|Church Creek|East New Market|Eldorado|Galestown|Hurlock|Secretary|Vienna|Algonquin|Elliott|Fishing Creek|Madison|Taylors Island") ~ "Dorcester",
+      str_detect(contributor_address,"Brunswick|Frederick|Burkittsville|Emmitsburg|Middletown|Mount Airy|Myersville|New Market|Thurmont|Walkersville|Woodsboro|Rosemont|Adamstown|Ballenger Creek|Bartonsville|Braddock Heights|Buckeystown|Green Valley|Jefferson|Libertytown|Linganore|Monrovia|Point of Rocks|Sabillasville|Spring Ridge|Ijamsville|Urbana") ~ "Frederick",
+      str_detect(contributor_address,"Accident|Deer Park|Friendsville|Grantsville|Kitzmiller|Loch Lynn Heights|Mountain Lake Park|Oakland|Bloomington|Crellin|Finzel|Gorman|Hutton|Jennings|Swanton") ~ "Garrett",
+      str_detect(contributor_address,"Aberdeen|Havre de Grace|Havre De Grace|Abingdon|Edgewood|White Hall|Belcamp|Bel Air") ~ "Harford",
+      str_detect(contributor_address,"Columbia|Glenelg|Lisbon|Woodstock|columbia|Elkridge|Cooksville|Ellicott City|Fulton|Highland|Ilchester|Jessup|North Laurel|Savage|Scaggsville") ~ "Howard",
+      str_detect(contributor_address,"Betterton|Chestertown|Galena|Millington|Rock Hall|Butlertown|Edesville|Fairlee|Georgetown|Kennedyville|Still Pond|Tolchester|Worton") ~ "Kent",
+      str_detect(contributor_address,"Gaithersburg|Rockville|Takoma Park|Barnesville|Brookeville|Chevy Chase|Chevy Chase View|Chevy Chase Village|Garrett Park|Glen Echo|Kensington|Laytonsville|North Chevy Chase|Poolesville|Somerset|Washington Grove|Martin's Additions|Drummond|Oakmont|Ashton-Sandy Spring|Sandy Spring|Aspen Hill|Bethesda|Brookmont|Burtonsville|Cabin John|Calverton|Clarksburg|Cloverly|Colesville|Damascus|Darnestown|Fairland|Forest Glen|Four Corners|Germantown|Glenmont|Hillandale|Kemp Mill|Layhill|Leisure World|rockville|Montgomery Village|Ashton|North Bethesda|bethesda|North Potomac|Olney|Potomac|Redland|Silver Spring|South Kensington|Travilah|White Oak|Wheaton|GAITHERSBURG|Dickerson|Boyds|TAKOMA PARK|Derwood") ~ "Montgomery",
+      str_detect(contributor_address,"Bowie|College Park|District Heights|Glenarden|Greenbelt|Hyattsville|Laurel|Mount Rainier|New Carrollton|Seat Pleasant|Berwyn Heights|Bladensburg|Brentwood|Capitol Heights|Cheverly|Colmar Manor|Cottage City|Cottage city|Eagle Harbor|Edmonston|Fairmount Heights|Forest Heights|Landover Hills|Morningside|North Brentwood|Riverdale Park|University Park|UNIVERSITY PARK|Upper Marlboro|Accokeek|Adelphi|Andrews AFB|Aquasco|Baden|Beltsville|Brandywine|Brock Hall|Brown Station|Calverton|Camp Springs|Cedarville|Chillum|Clinton|Coral Hills|Croom|East Riverdale|Fairwood|Forestville|Fort Washington|Friendly|Glassmanor|Glenn Dale|Hillandale|Hillcrest Heights|Kettering|Konterra|Lake Arbor|Landover|Langley Park|Lanham|Largo|Marlboro Meadows|Marlboro Village|Marlow Heights|Marlton|Maryland Park|Melwood|Mitchellville|National Harbor|Oxon Hill|Peppermill Village|Queensland|Rosaryville|Seabrook|Silver Hill|South Laurel|Springdale|Suitland|HYATTSVILLE|Summerfield|Temple Hills|Walker Mill|West Laurel|Westphalia|Woodlawn|Woodmore|Ft Washington|Riverdale") ~ "Prince George's",
+      str_detect(contributor_address,"Barclay|Centreville|Church Hill|Queen Anne|Queenstown|Sudlersville|Chester|Grasonville|Kent Narrows|Kingstown|Stevensville") ~ "Queen Anne's",
+      str_detect(contributor_address,"California|Callaway|Charlotte Hall|Golden Beach|Lexington Park|Mechanicsville|Piney Point|St. George Island|Tall Timbers|Wildewood|St Marys City|Saint Inigoes|Leonardtown") ~ "St. Mary's",
+      str_detect(contributor_address,"Crisfield|Princess Anne|Chance|Dames Quarter|Deal Island|Eden|Fairmount|Frenchtown-Rumbly|Mount Vernon|Hog's Neck|Cow Island|Jason|Smith Island|West Pocomoke") ~ "Somerset",
+      str_detect(contributor_address,"Easton|Oxford|Saint Michaels|Trappe|Doncaster|Dover|York|Wyetown|St Michaels|Cordova|Tilghman Island") ~ "Talbot",
+      str_detect(contributor_address,"Hagerstown|Boonsboro|Clear Spring|Funkstown|Hancock|Keedysville|Sharpsburg|Smithsburg|Williamsport|Antietam|Bagtown|Bakersville|Beaver Creek|Big Pool|Big Spring|Breathedsville|Brownsville|Cavetown|Cearfoss|Charlton|Chewsville|Dargan|Downsville|Eakles Mill|Edgemont|Ernstville|Fairplay|Fairview|Fort Ritchie|Fountainhead-Orchard Hills|Gapland|Garretts Mill|Greensburg|Halfway|Highfield-Cascade|Indian Springs|Jugtown|Kemps Mill|Leitersburg|Mapleville|Maugansville|Mercersville|Middleburg|Mount Aetna|Mount Briar|Mount Lena|Paramount-Long Meadow|Pecktonville|Pinesburg|Pondsville|Reid|Ringgold|Robinwood|Rohrersville|Saint James|San Mar|Sandy Hook|Tilghmanton|Trego-Rohrersville Station|Wilson-Conococheague|Yarrowsburg") ~ "Washington",
+      str_detect(contributor_address,"Fruitland|Salisbury|Delmar|Hebron|Mardela Springs|Pittsville|Sharptown|Willards|Allen|Bivalve|Jesterville|Nanticoke|Nanticoke Acres|Parsonsburg|Powellville|Quantico|Tyaskin|Waterview|Whitehaven") ~ "Wicomico",
+      str_detect(contributor_address,"Fitchburg|Gardner|Leominster|Southbridge|Worcester|Ashburnham|Athol|Auburn|Barre|Berlin|Blackstone|Bolton|Boylston|Brookfield|Charlton|Clinton|Douglas|Dudley|East Brookfield|Grafton|Hardwick|Harvard|Holden|Hopedale|Hubbardston|Lancaster|Leicester|Lunenburg|Mendon|Milford|Millbury|Millville|New Braintree|North Brookfield|Northborough|Northbridge|Oakham|Oxford|Paxton|Petersham|Phillipston|Princeton|Royalston|Rutland|Shrewsbury|Southborough|Spencer|Sterling|Sturbridge|Sutton|Templeton|Upton|Uxbridge|Warren|Webster|West Boylston|West Brookfield|Westborough|Westminster|Winchendon|Athol|Baldwinville|Barre|Brookfield|Clinton|Cordaville|Devens|East Brookfield|East Douglas|Fiskdale|Hopedale|Lunenburg|Milford|North Brookfield|Northborough|Petersham|Rutland|South Ashburnham|South Lancaster|Spencer|Sturbridge|Upton|Warren|Webster|West Brookfield|West Warren|Westborough|Whitinsville|Ocean Pines|Ocean City|Winchendon") ~ "Worcester",
+      TRUE ~ contributor_address
+    )
+  ) |>
+  group_by(county) |>
+  summarise(
+    count=n()
+  ) |>
+  arrange(county)
 
-# Display results of code below this codeblock
-
+king_md_contribs_by_county
 ```
 
 -30-
