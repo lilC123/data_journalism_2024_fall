@@ -63,7 +63,6 @@ In this notebook, we are reverse engineering five sentences from the story.
 * **Analysis summary**: Our analysis confirms the results/insinuations of this sentence. We ran code to determine the percentage of the total sum of contributions that came from MD for Moore and Perez (we checked King in question 2), the two candidates mentioned. Our results showed that approximately 42% of Moore's contributions were from MD, 19% for Perez, and 11% for King, which were consistent with the numbers given in the story. In addition, the sums that were given in the story also matched up in our analysis.
 
 ```{r}
-# Put code to reverse engineer sentence here
 moore_contribs <- clean_names(read_csv("data/moore_contribs.csv"))
 moore_contribs_md <- clean_names(read_csv("data/moore_contribs_md.csv"))
 moore_total <- moore_contribs |>
@@ -77,8 +76,6 @@ moore_total_md <- moore_contribs_md |>
 moore_total
 moore_total_md
 moore_total_md/moore_total*100
-# Display results of code below this codeblock
-
 ```
 ```{r}
 perez_contribs <- clean_names(read_csv("data/perez_contribs.csv"))
