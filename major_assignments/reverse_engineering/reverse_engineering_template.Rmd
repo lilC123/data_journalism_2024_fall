@@ -35,12 +35,22 @@ library(janitor)
 
 In this section, describe the source of the data, write a basic data dictionary for data you are working with, and discuss any caveats or issues you discovered working with this data. 
 
+## Analysis 
+We had no problems with our data, other than some issues up front. The CNS story never specifically notes what data they're working with, but we gathered (through trial and error) that it was the yearly filing from the beginning of 2022. We had no issues actually working with. In terms of basic data dictionary, we broke each candidate down into a file of their total contribs, titled xx_contribs, and one that was their Maryland contribs, or xx_contribs_md.
 ```{r}
-# Load required data
+moore_contribs <- clean_names(read_csv("data/moore_contribs.csv"))
 
-# Path to data should be loaded from folder "data" i.e. read_csv("data/name_of_data.csv")
+moore_contribs_md <- clean_names(read_csv("data/moore_contribs_md.csv"))
 
-# Clean required data and prepare for analysis if needed. 
+perez_contribs <- clean_names(read_csv("data/perez_contribs.csv"))
+
+perez_contribs_md <- clean_names(read_csv("data/perez_contribs_md.csv"))
+
+king_contribs <- clean_names(read_csv("data/king_contribs.csv"))
+
+king_contribs_md <- clean_names(read_csv("data/king_contribs_md.csv"))
+
+franchot_contribs <- clean_names(read.csv("data/franchot_contribs.csv"))
 
 ```
 
@@ -49,20 +59,46 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ### Sentence 1
 
-* **Sentence text**: [“Among the leading campaigns, some Maryland gubernatorial candidates raised more than half their money from outside the state last year, according to the analysis.”]
-* **Analysis summary**: [Write up two to three sentences describing the results of your analysis.  Were you able to confirm the finding? If not, why not?]
+* **Sentence text**: “Among the leading campaigns, some Maryland gubernatorial candidates raised more than half their money from outside the state last year, according to the analysis.”
+* **Analysis summary**: Our analysis confirms the results/insinuations of this sentence. We ran code to determine the percentage of the total sum of contributions that came from MD for Moore and Perez (we checked King in question 2), the two candidates mentioned. Our results showed that approximately 42% of Moore's contributions were from MD, 19% for Perez, and 11% for King, which were consistent with the numbers given in the story. In addition, the sums that were given in the story also matched up in our analysis.
 
 ```{r}
 # Put code to reverse engineer sentence here
-
+moore_contribs <- clean_names(read_csv("data/moore_contribs.csv"))
+moore_contribs_md <- clean_names(read_csv("data/moore_contribs_md.csv"))
+moore_total <- moore_contribs |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+moore_total_md <- moore_contribs_md |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+moore_total
+moore_total_md
+moore_total_md/moore_total*100
 # Display results of code below this codeblock
 
 ```
-
+```{r}
+perez_contribs <- clean_names(read_csv("data/perez_contribs.csv"))
+perez_contribs_md <- clean_names(read_csv("data/perez_contribs_md.csv"))
+perez_total <- perez_contribs |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+perez_total_md <- perez_contribs_md |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+perez_total
+perez_total_md
+perez_total_md/moore_total*100
+```
 ### Sentence 2
 
 * **Sentence text**: “John B. King, former secretary of Education under President Barack Obama, raised $2.2 million in campaign funding last year. Only 11%, just under $240,000, came from Maryland donors.”
-* **Analysis summary**: Our reverse engineering did not produce the same findings as the report. According to our data, King's campaign received $2.02 million in 2021, not $2.2 million. Our data also shows $195,000 from Maryland donors, which is 9.7% of the total.
+* **Analysis summary**: Our reverse engineering confirmed this sentence from the story. It showed that King raises approximately $2.2 million, that 10.9% (roughly 11) of it was from MD, and that approximately $240,000 was the amount from Maryland ($238,527 to be exact).
 
 ```{r}
 king_contribs <- clean_names(read_csv("data/king_contribs.csv"))
@@ -83,7 +119,7 @@ king_total_md/king_total*100
 ### Sentence 3
 
 * **Sentence text**: “Moore raised over $1.7 million in Maryland, the highest total of any candidate.”
-* **Analysis summary**: The sum of all the 2021 contributions to Wes Moore's campaign is about $1.5 million, which is not exactly what was stated in the article. Thus, this particular finding the reporters specified in the story is unconfirmed. Also, the website does not let you download every single contribution to a gubernatorial campaign in one dataset, so we're also unable to confirm the second part of the statement as of now.
+* **Analysis summary**: The sum of the 2021 year filing for Wes Moore was $1.74 million, which is consistent with the sentence above. We also ran the sums for the other leading candidates (King, Perez, and Franchot), and Moore did indeed have the highest sum from MD. For context, King was roughly $240k, Perez $764k, and Franchot $1.3 million.
 
 ```{r}
 moore_contribs_md <- clean_names(read_csv("data/moore_contribs_md.csv"))
@@ -93,7 +129,34 @@ moore_total_md <- moore_contribs_md |>
   )
 moore_total_md
 ```
+```{r} 
+king_contribs_md <- clean_names(read_csv("data/king_contribs_md.csv"))
+king_total_md <- king_contribs_md |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+king_total_md
+```
+```{r}
+perez_contribs_md <- clean_names(read_csv("data/perez_contribs_md.csv"))
+perez_total_md <- perez_contribs_md |>
+  summarise(
+    total=sum(contribution_amount)
+  )
+perez_total_md
+```
+```{r} 
+franchot_contribs <- clean_names(read.csv("data/franchot_contribs.csv"))
+franchot_contribs <- franchot_contribs |>
+  mutate(state = str_extract(contributor_address, "\\b[A-Z]{2}\\b"))
 
+md_contribs_franchot <- franchot_contribs |>
+  filter(state == "MD")
+
+total_md_contribs_franchot <- sum(md_contribs_franchot$contribution_amount, na.rm = TRUE)
+total_contribs_franchot <- sum(franchot_contribs$contribution_amount, na.rm = TRUE)
+total_md_contribs_franchot
+```
 ### Sentence 4
 
 * **Sentence text**: "Moore, King and Perez stand in stark contrast to Peter Franchot, a former Maryland state delegate and current comptroller, who raised over 78% of his $1.66 million from inside Maryland."
@@ -127,7 +190,7 @@ king_md_contribs_by_county <- king_contribs_md |>
       str_detect(contributor_address, "Barton|Cumberland|Frostburg|Lonaconing|Luke|Midland|Westernport|Bowling Green|Cresaptown|Ellerslie|La Vale|McCoole|Mount Savage|Potomac Park") ~ "Allegany",
       str_detect(contributor_address, "Annapolis|ANNAPOLIS|annapolis|ARNOLD|Harwood|Highland Beach|Annapolis Neck|Arden on the Severn|Arnold|Brooklyn Park|Cape Saint Claire|Crofton|Crownsville|Deale|Edgewater|Ferndale|Hanover|Fort Meade|Friendship|Galesville|Gambrills|Glen Burnie|Herald Harbor|Lake Shore|Linthicum|Maryland City|Davidsonville|Mayo|Naval Academy|Odenton|Parole|Pasadena|Pumphrey|Riva|Riviera Beach|Selby-on-the-Bay|Severn|Severna Park|Shady Side|Millersville|South Gate") ~ "Anne Arundel",
       str_detect(contributor_address,"Baltimore|BALTIMORE|Mount Washington") ~ "Baltimore City",
-      str_detect(contributor_address,"Barton|Phoenix|Monkton|Parkton|Glen Arm|Baldwin|Gwynn Oak|Nottingham|Cumberland|Frostburg|Lonaconing|Luke|Midland|Westernport|Arbutus|Baltimore Highlands|Bowleys Quarters|Carney|Catonsville|Cockeysville|Dundalk|Edgemere|Essex|Garrison|Hampton|Kingsville|Lansdowne|Lochearn|Lutherville|Mays Chapel|Middle River|Milford Mill|Windsor Mill|Overlea|Owings Mills|Parkville|Perry Hall|Pikesville|Randallstown|Reisterstown|Rosedale|Rossville|Timonium|Towson|White Marsh|Woodlawn") ~ "Baltimore County",
+      str_detect(contributor_address,"Barton|Phoenix|Monkton|Parkton|Glen Arm|Hydes|Sparks|Baldwin|Gwynn Oak|Nottingham|Cumberland|Frostburg|Lonaconing|Luke|Midland|Westernport|Arbutus|Baltimore Highlands|Bowleys Quarters|Carney|Catonsville|Cockeysville|Dundalk|Edgemere|Essex|Garrison|Hampton|Kingsville|Lansdowne|Lochearn|Lutherville|Mays Chapel|Middle River|Milford Mill|Windsor Mill|Overlea|Owings Mills|Parkville|Perry Hall|Pikesville|Randallstown|Reisterstown|Rosedale|Rossville|Timonium|Towson|White Marsh|Woodlawn") ~ "Baltimore County",
       str_detect(contributor_address,"Chesapeake Beach|North Beach|Broomes Island|Calvert Beach|Chesapeake Ranch Estates|Drum Point|Dunkirk|Huntingtown|Long Beach|Lusby|Owings|Prince Frederick|Prnc Frederck|Port Republic|St. Leonard|Saint Leonard|Dowell|Solomons") ~ "Calvert",
       str_detect(contributor_address,"Denton|Federalsburg|Goldsboro|Greensboro|Henderson|Hillsboro|Marydel|Preston|Ridgely|Templeville|Choptank|West Denton|Williston") ~ "Caroline",
       str_detect(contributor_address,"Westminster|Finksburg|Woodbine|Taneytown|Manchester|Mount Airy|New Windsor|Union Bridge|Hampstead|Sykesville|Eldersburg") ~ "Carroll",
@@ -136,7 +199,7 @@ king_md_contribs_by_county <- king_contribs_md |>
       str_detect(contributor_address,"Cambridge|Brookview|Church Creek|East New Market|Eldorado|Galestown|Hurlock|Secretary|Vienna|Algonquin|Elliott|Fishing Creek|Madison|Taylors Island") ~ "Dorcester",
       str_detect(contributor_address,"Brunswick|Frederick|Burkittsville|Emmitsburg|Middletown|Mount Airy|Myersville|New Market|Thurmont|Walkersville|Woodsboro|Rosemont|Adamstown|Ballenger Creek|Bartonsville|Braddock Heights|Buckeystown|Green Valley|Jefferson|Libertytown|Linganore|Monrovia|Point of Rocks|Sabillasville|Spring Ridge|Ijamsville|Urbana") ~ "Frederick",
       str_detect(contributor_address,"Accident|Deer Park|Friendsville|Grantsville|Kitzmiller|Loch Lynn Heights|Mountain Lake Park|Oakland|Bloomington|Crellin|Finzel|Gorman|Hutton|Jennings|Swanton") ~ "Garrett",
-      str_detect(contributor_address,"Aberdeen|Havre de Grace|Havre De Grace|Abingdon|Edgewood|White Hall|Belcamp|Bel Air") ~ "Harford",
+      str_detect(contributor_address,"Aberdeen|Havre de Grace|Havre De Grace|Abingdon|Edgewood|White Hall|Belcamp|Forest Hill|Bel Air") ~ "Harford",
       str_detect(contributor_address,"Columbia|Glenelg|Lisbon|Woodstock|columbia|Elkridge|Cooksville|Ellicott City|Fulton|Highland|Ilchester|Jessup|North Laurel|Savage|Scaggsville") ~ "Howard",
       str_detect(contributor_address,"Betterton|Chestertown|Galena|Millington|Rock Hall|Butlertown|Edesville|Fairlee|Georgetown|Kennedyville|Still Pond|Tolchester|Worton") ~ "Kent",
       str_detect(contributor_address,"Gaithersburg|Rockville|Takoma Park|Barnesville|Brookeville|Chevy Chase|Chevy Chase View|Chevy Chase Village|Garrett Park|Glen Echo|Kensington|Laytonsville|North Chevy Chase|Poolesville|Somerset|Washington Grove|Martin's Additions|Drummond|Oakmont|Ashton-Sandy Spring|Sandy Spring|Aspen Hill|Bethesda|Brookmont|Burtonsville|Cabin John|Calverton|Clarksburg|Cloverly|Colesville|Damascus|Darnestown|Fairland|Forest Glen|Four Corners|Germantown|Glenmont|Hillandale|Kemp Mill|Layhill|Leisure World|rockville|Montgomery Village|Ashton|North Bethesda|bethesda|North Potomac|Olney|Potomac|Redland|Silver Spring|South Kensington|Travilah|White Oak|Wheaton|GAITHERSBURG|Dickerson|Boyds|TAKOMA PARK|Derwood") ~ "Montgomery",
