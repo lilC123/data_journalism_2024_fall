@@ -197,14 +197,13 @@ Those axis titles are kind of a mess. Let's change "count" on the x axis to "net
 maryland_top_counties |>
   ggplot() +
   geom_bar(aes(x=reorder(County,UNAF_DIFF), weight=UNAF_DIFF)) +
-  coord_flip() + 
+  coord_flip() +
   theme_economist() +
   labs(
     title="Counties with Biggest Jumps in Unaffiliated Voters",
     x = "net change",
     y = "county",
     caption = "source: Maryland State Board of Elections"
-    
   )
 ```
 
@@ -289,12 +288,11 @@ It is the same chart, except now the date labels on the x-axis are rotated 45 de
 ```{r}
 md_winred_by_date |>
   ggplot() + 
-  geom_line(aes(x=date, y=total_contributions)) + 
+  geom_line(aes(x=date, y=total_contributions)) +
   scale_x_date(date_breaks = "1 week", date_labels = "%b %d") +
   theme(
     axis.text.x = element_text(angle = 45,  hjust=1)
   )
-
 ```
 
 Again, this isn't as pretty as we could make it. But by charting this, we can quickly see a pattern that can help guide our reporting.
