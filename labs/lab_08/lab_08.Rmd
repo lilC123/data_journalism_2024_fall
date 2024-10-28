@@ -107,7 +107,8 @@ md_returned_dem_ballots_bottom_counties |>
 **A3** The line chart shows that Democrats return absentee ballots way more often than Republicans and other voters. This tracks with trends in recent elections, in which Democrats have received a heavy amount of support from absentee voters.
 
 ```{r}
-md_returned_ballots_by_party_timeline <- md_absentee_ballots_date |>
+frederick_returned_ballots_by_party_timeline <- md_absentee_ballots_date |>
+  filter(county_name=="FREDERICK") |>
   select(date, dem_received, rep_received, oth_received) |>
   group_by(date) |>
   summarise(
@@ -115,14 +116,14 @@ md_returned_ballots_by_party_timeline <- md_absentee_ballots_date |>
     count_rep=sum(rep_received),
     count_oth=sum(oth_received)
   )
-md_returned_ballots_by_party_timeline |>
+frederick_returned_ballots_by_party_timeline |>
   ggplot() + 
   geom_line(aes(x=date, y=count_dem, color="Democratic\u00A0\u00A0\u00A0\u00A0")) +
   geom_line(aes(x=date, y=count_rep, color="Republican\u00A0\u00A0\u00A0\u00A0")) +
   geom_line(aes(x=date, y=count_oth, color="Other\u00A0\u00A0\u00A0\u00A0")) +
   theme_economist() +
   labs(
-    title="MD Returned Absentee Ballots by Party\nOctober 12-23, 2024\n",
+    title="Frederick County, MD Returned Absentee Ballots by Party\nOctober 12-23, 2024\n",
     x = "\nDate",
     y = "Ballots Received\n",
     caption = "source: Maryland State Board of Elections",
