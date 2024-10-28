@@ -154,11 +154,11 @@ franchot_total_md
 ### Sentence 4
 
 * **Sentence text**: "Moore, King and Perez stand in stark contrast to Peter Franchot, a former Maryland state delegate and current comptroller, who raised over 78% of his $1.66 million from inside Maryland."
-* **Analysis summary**: The reverse engineering produced different findings as the report. Our code found that 42.13% of Peter Franchot's contributions ($4.1 million) came from Maryland contributors.
+* **Analysis summary**: The reverse engineering produced the same findings as the article. Our code found that 78.4% of Franchot's donations were from within the state of Maryland.
 
 ```{r}
-franchot_contribs <- clean_names(read_csv("data/moore_contribs.csv"))
-franchot_contribs_md <- clean_names(read_csv("data/moore_contribs_md.csv"))
+franchot_contribs <- clean_names(read_csv("data/franchot_contribs.csv"))
+franchot_contribs_md <- clean_names(read_csv("data/franchot_contribs_md.csv"))
 franchot_total <- franchot_contribs |>
   summarise(
     total=sum(contribution_amount)
