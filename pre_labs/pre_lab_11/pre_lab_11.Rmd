@@ -259,6 +259,7 @@ cmte_results |> html_elements('li') |> html_text()
 Ok, so now we can see the committee names. But they are surrounded by a bunch of things we don't want, and this *still* isn't a dataframe. Let's solve the second problem first with the `tibble()` function, and use `html_attr` to look for the 'href' value inside the `a` tags.
 
 ### Task 11: Turn the contents of the <li> and <a> tags into a dataframe **Task** Run the following code in the gray-colored codeblock below to make a dataframe. Describe the output: **Answer**
+The output is a one-column dataframe of committee names.
 
 ```{r}
 committees <- cmte_results |> html_elements("li a")
@@ -267,6 +268,8 @@ committees_with_urls <- tibble(
   name = committees %>% html_text(trim = TRUE),
   url = committees %>% html_attr("href")
 )
+
+committees_with_urls
 ```
 
 Now we're getting closer. The rows in this dataframe we don't want to begin with a backslash. Let's get rid of those using `filter()`:
@@ -279,6 +282,8 @@ Now we're getting closer. The rows in this dataframe we don't want to begin with
 committees_with_urls <- committees_with_urls |> 
   # filter out rows that begin with a backslash character
   filter(!str_detect(url, "^/"))
+
+committees_with_urls
 ```
 
 And now you have the committee names and urls.
