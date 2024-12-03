@@ -45,6 +45,8 @@ md_ev_pres_20 <- clean_names(read_csv("data/md_ev_pres_20.csv")) #MD early votin
 md_ev_gub_22 <- clean_names(read_csv("data/md_ev_gub_22.csv")) #MD early voting for the gubernatorial election of 2022
 
 md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) #MD early voting for the presidential election of 2024
+
+va_ev_pres_24 <- clean_names(read_csv("data/va_ev_pres_24.csv")) #VA early voting for the presidential election of 2024
 ```
 
 ## Sentences to Engineer
@@ -55,10 +57,68 @@ In this notebook, we are working to answer five questions about early voters in 
 
 We want to identify general trends in the data, including changes and trends based on events is the news. This is a common thing that other journalists have done - checking trends - but we could differ from them by doing a timeline with events like political rhetoric or other topics.
 
-* **Analysis summary**:
+* **Analysis summary**: Our analysis shows that in general, early voting has increased across counties in Maryland, with some like Washington and Calvert counties more than tripling their early voting turnout over the 10-year stretch. One thing that is a little surprising is the sharp decline in EV in Baltimore City, which began before the pandemic and seems to only now be slightly recovering. The only other county jurisdictions with declines from 2014-2024 are Somerset, Dorchester, Kent, and Anne Arundel, which do not have much in common with Baltimore City. The gubernatorial races tend to draw less early voting, which is not surprising because they draw less voting overall. Three counties did not have a single early voter in the 2022 race.
 
 ```{r}
+md_ev_gub_14 <- clean_names(read_csv("data/md_ev_gub_14.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_14=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2014
 
+md_ev_pres_16 <- clean_names(read_csv("data/md_ev_pres_16.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_16=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2016
+
+md_ev_gub_18 <- clean_names(read_csv("data/md_ev_gub_18.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_18=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2018
+
+md_ev_pres_20 <- clean_names(read_csv("data/md_ev_pres_20.csv")) |>
+  mutate(total=total_day1+total_day2+total_day3+total_day4+total_day5+total_day6+total_day7+total_day8) |>
+  mutate(total=as.numeric(total)) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_20=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2020
+
+md_ev_gub_22 <- clean_names(read_csv("data/md_ev_gub_22.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_22=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2022
+    
+md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(county_name, total) |>
+  group_by(county_name) |>
+  summarise(
+    total_24=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2024
+
+md_ev_combined <- md_ev_pres_24 |>
+  left_join(md_ev_gub_22, join_by(county_name)) |>
+  left_join(md_ev_pres_20, join_by(county_name)) |>
+  left_join(md_ev_gub_18, join_by(county_name)) |>
+  left_join(md_ev_pres_16, join_by(county_name)) |>
+  left_join(md_ev_gub_14, join_by(county_name)) |> #join all the dataframes at once because they all have the same structure
+  mutate(pct_change=100*(total_24-total_14)/total_14) |> #new column to show % change from 2014 to 2024
+  arrange(desc(pct_change))
+
+md_ev_combined
 ```
 
 ### Question 2
@@ -80,15 +140,15 @@ Cross-referencing these numbers with 538's final polling numbers, it seems that 
 ```{r}
 md_ev_pres_16 <- clean_names(read_csv("data/md_ev_pres_16.csv")) |>
   group_by(party_code)|>
-  summarise(count = n())
+  summarise(count = n()) #counting EV by party for 2016
 
 md_ev_pres_20 <- clean_names(read_csv("data/md_ev_pres_20.csv")) |>
   group_by(party_code)|>
-  summarise(count = n())
+  summarise(count = n()) #counting EV by party for 2020
 
 md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) |>
   group_by(party_code)|>
-  summarise(count = n())
+  summarise(count = n()) #counting EV by party for 2024
 
 head(md_ev_pres_16)
 head(md_ev_pres_20)
@@ -109,7 +169,7 @@ md_ev_pres_16 <- clean_names(read_csv("data/md_ev_pres_16.csv")) |>
   group_by(county_name) |>
   summarise(
     total_16=sum(total, na.rm=TRUE)
-  )
+  ) #finding total EV for 2016, same code as Q1
 
 md_ev_pres_20 <- clean_names(read_csv("data/md_ev_pres_20.csv")) |>
   mutate(total=total_day1+total_day2+total_day3+total_day4+total_day5+total_day6+total_day7+total_day8) |>
@@ -118,7 +178,7 @@ md_ev_pres_20 <- clean_names(read_csv("data/md_ev_pres_20.csv")) |>
   group_by(county_name) |>
   summarise(
     total_20=sum(total, na.rm=TRUE)
-  )
+  ) #finding total EV for 2020, same code as Q1
     
 md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) |>
   mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
@@ -126,15 +186,15 @@ md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) |>
   group_by(county_name) |>
   summarise(
     total_24=sum(total, na.rm=TRUE)
-  )
+  ) #finding total EV for 2024, same code as Q1
 
 md_ev_pres_combined <- md_ev_pres_24 |>
   left_join(md_ev_pres_20, join_by(county_name)) |>
-  left_join(md_ev_pres_16, join_by(county_name)) |>
+  left_join(md_ev_pres_16, join_by(county_name)) |> #join all the dataframes at once because they all have the same structure, same as Q1
   arrange(desc(total_20))
 
 ggplot(md_ev_pres_combined, aes(x=total_24, y=total_20, color=total_16)) +
-  geom_point()
+  geom_point() #couldn't find a great way to visualize three variables, so a plot chart with color coded values was the best we could do
 ```
 
 ### Question 4
@@ -142,10 +202,41 @@ ggplot(md_ev_pres_combined, aes(x=total_24, y=total_20, color=total_16)) +
 
 This specifically addresses how local states are doing with voter turnout (essentially the DMV and just outside of it). Having this information will show interesting trends and also any discrepancies of voters that are geographically close to Maryland. There has been extensive research and journalistic work done on states early voter turnout but not so much based on geographic location and population size.
 
-* **Analysis summary**:
+* **Analysis summary**: Early voting data was pervasive in Pennsylvania and Delaware, so we looked at Virginia as our neighborly comparison. As we can see from our analysis, a higher percentage of VA residents participated in early voting in 2024. Since Virginia's population is also higher than Maryland's, this means that almost 150,000 more people early voted in VA than in MD.
 
 ```{r}
+md_ev_pres_24 <- clean_names(read_csv("data/md_ev_pres_24.csv")) |>
+  mutate(total=day1+day2+day3+day4+day5+day6+day7+day8) |>
+  select(total) |>
+  summarise(
+    total_md=sum(total, na.rm=TRUE)
+  ) #finding total EV for 2024, same code as Q1 and Q3
 
+va_ev_pres_24 <- clean_names(read_csv("data/va_ev_pres_24.csv")) |>
+  select(early_voting) |>
+  summarise(
+    total_va=sum(early_voting, na.rm=TRUE)
+  ) #finding total EV for Virginia in 2024, grabbed csv file from their elections website just like in MD. PA and DE had data for registration and results by candidate, but didn;t include columns for early voting in their data. We could only find absentee ballots, provisional ballots, and in-person votes.
+
+md_va_24 <- md_ev_pres_24 |>
+  cross_join(va_ev_pres_24) #cross join since they do not share a column name
+
+library(tidyr)
+library(dplyr) #both needed for cleaning the combined dataframe so that it can be suitable for ggplot
+md_va_24 <- md_va_24 |>
+  mutate(population_md=6180253) |> #as of July, 2023 via https://www.census.gov/quickfacts/fact/table/MD/PST045223
+  mutate(population_va=8715698) |> #as of July, 2023 via https://www.census.gov/quickfacts/fact/table/VA/PST045223
+  mutate(pct_md=total_md/population_md*100) |>
+  mutate(pct_va=total_va/population_va*100) |> #new columns showing how much of the population did early voting
+  pivot_longer(cols=everything(), names_to="key", values_to="value") |> #pivot_longer() function initiates the process of cleaning/flipping the dataframe so that it becomes sutiable for ggplot. "cols=everything()" makes sure we are working with all of our columns. "names_to='key'" essentially creates a bank of the column names that we will use next. same for the numbers in "value".
+  separate(key, into=c("metric", "state"), sep="_") |> #separate() function allows us to clean our column names, which we know are now stored in "key". We take everything before the underscore and call it a metric (total, population, and pct) and make everything after the underscore a state (md, va). this would not work if our column names did not all follow the structure of metric_state.
+  pivot_wider(names_from=metric, values_from=value) #now we simply pivot the dataframe to where the column names are the ones we split from their underscores in "metric", the rows are the other half of those underscored titles, and the numbers we stored in "value" beforehand return.
+
+md_va_24
+
+md_va_24 |>
+  ggplot() +
+  geom_bar(aes(x=state, weight=total, fill=pct)) #the color of the bars reflects the percentage of the state's population that early voted.
 ```
 
 ### Question 5
